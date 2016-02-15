@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="blockly_compressed.js"></script>
+<script src="blocks_compressed.js"></script>
+ <script src="msg/js/en.js"></script>
+ <script src="blocks/filter.js"></script>
+ <script src="blocks/input.js"></script>
+ <script src="blocks/output.js"></script>
+ <script src="blocks/default.js"></script>
+  <script src="blocks/elastic_search.js"></script>
+ <script src="javascript_compressed.js"></script>
+  <script src="generators/logstash/input.js"></script>
+   <script src="generators/logstash/output.js"></script>
+    <script src="generators/logstash/filter.js"></script>
+     <script src="generators/logstash/elasticSearch.js"></script>
+  <script src="logstash-ui/logstash-ui.js"></script>
+  <!-- <script src="saver.js"></script>
+     <script src="FileSaver.min.js"></script> -->
+  <meta charset="utf-8">
+  <title>Blockly Testing</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+    table {
+      height: 100%;
+      width: 100%;
+    }
+    #blocklyArea {
+      height: 99%;
+       width: 100%;
+    }
+  </style>
+</head>
+<body >
+<table>
+<tr style="height:80%">
+<td style="width:100%" id="blocklyArea"></td>
+ <tr>
+	<td >Show Logstash Config:</td>
+	<td ><button onclick="showConfig()">Show Logstash Config</button></td>
+	<td ><button onclick="clearWorkspace()">Clear Workspace</button></td>
+</tr>
+ <tr>
+	<td >Filename to Save As:</td>
+	<td  ><input id="inputFileNameToSaveAs"></input></td>
+	<td ><button onclick="saveTextAsFile()">Save Blockly Config to File</button></td>
+</tr>
+<tr>
+	<td>Select a File to Load:</td>
+	<td><input type="file" id="fileToLoad"></td>
+	<td><button onclick="loadFileAsText()">Load Selected Blockly Config</button><td>
+</tr>
+<tr>
+	<td>Filename to Save Logstash Config As:</td>
+	<td><input id="logstashConfigNameToSaveAs"></input></td>
+	<td><button onclick="saveLogstashConfigAsFile()">Save Logstash Config to File</button></td>
+</tr>
+<tr>
+<td id="codeArea"></td>
+</tr>
+</table>
+<div id="blocklyDiv" style="position: absolute"></div>
+
+<xml id="toolbox" style="display: none">
+<category name="InputBlocks">
+ <block type="input_base"></block>
+  <block type="input_file"> </block>
+</category>
+<sep></sep>
+<category name="Number">
+   <block type="math_number"></block>
+</category>
+<sep></sep>
+<category name="Filter">
+<block type="filter_base"></block>
+<block type="remove_field"></block> 
+   <block type="grok"></block>
+</category>
+<sep></sep>
+ <category name="CSV">
+ <block type="lists_create_with"></block>
+ <block type="csv"></block> 
+ <block type="text"></block>
+  <block type="if_not"></block>
+  <block type="drop"></block>
+ </category>
+<sep></sep>
+<category name="Output">
+ <block type="output"></block>
+ <block type="std_out"></block>
+  <block type="codec"></block>
+ 
+</category>
+<sep></sep>
+<category name="Elastic Search">
+<block type="hosts"></block> 
+ <block type="doc_as_upsert"></block>
+  <block type="document_id"></block> 
+ <block type="index"></block>
+ <block type="workers"></block>
+ <block type="action"></block>
+ <block type="elasticsearch"></block>
+</category>
+
+<sep></sep>
+<category name="commons">
+       <block type="text"></block>
+     <block type="logic_boolean"></block>
+        
+       <block type="text_append"></block>
+    <block type="controls_if"></block>
+      <block type="logic_compare"></block> 
+       <block type="lists_create_with"></block>  
+ </category>
+
+</xml>
+
+
+<script type='text/javascript'>
+
+  var blocklyArea = document.getElementById('blocklyArea');
+  var blocklyDiv = document.getElementById('blocklyDiv');
+  var workspace = Blockly.inject(blocklyDiv,
+      {toolbox: document.getElementById('toolbox')});
+  var xml = Blockly.Xml.textToDom(xmlText);
+  Blockly.Xml.domToWorkspace(workspace, xml);
+  //showCode();
+  //Blockly.addChangeListener(workspaceChanged);
+  window.addEventListener('workspaceChanged', workspaceChanged, false);
+  var workspaceChanged = function() {
+	  alert('workspaceChanged');
+	  //showCode();
+ }
+
+  </script>
+ 
+</body>
+</html>

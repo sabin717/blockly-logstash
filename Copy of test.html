@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="blockly_compressed.js"></script>
+<script src="blocks_compressed.js"></script>
+ <script src="msg/js/en.js"></script>
+ <script src="blocks/filter.js"></script>
+ <script src="blocks/text.js"></script>
+  <script src="blocks/default.js"></script>
+ <script src="javascript_compressed.js"></script>
+  <script src="generators/logstash/logstash_conf.js"></script>
+  <!-- <script src="saver.js"></script>
+     <script src="FileSaver.min.js"></script> -->
+  <meta charset="utf-8">
+  <title>Blockly Testing</title>
+</head>
+<body >
+ <!-- <button onclick="showCode()">Show code</button>
+ <button onclick="saveConfig()">Save Config</button>
+  <button onclick="loadFileAsText()">Load Config</button> -->
+<div id="blocklyDiv"  ></div>
+<xml id="toolbox" style="display: none">
+<category name="InputBlocks">
+ <block type="input_base"></block>
+  <block type="input_file"> </block>
+</category>
+<sep></sep>
+<category name="Number">
+   <block type="math_number"></block>
+</category>
+<sep></sep>
+<category name="Filter">
+<block type="filter_base"></block>
+<block type="remove_field"></block> 
+
+</category>
+<sep></sep>
+ <category name="csv block">
+ <block type="lists_create_with"></block>
+ <block type="csv"></block> 
+ <block type="text"></block>
+ </category>
+<sep></sep>
+<category name="Output">
+<block type="hosts"></block> 
+ <block type="doc_as_upsert"></block>
+  <block type="document_id"></block> 
+ <block type="index"></block>
+ <block type="workers"></block>
+ <block type="action"></block>
+ <block type="output1"></block>
+ <block type="elasticsearch"></block>
+</category>
+<sep></sep>
+<category name="commons">
+       <block type="text"></block>
+     <block type="logic_boolean"></block>
+        
+       <block type="text_append"></block>
+    <block type="controls_if"></block>
+      <block type="logic_compare"></block> 
+       <block type="lists_create_with"></block>  
+ </category>
+
+</xml>
+<table >
+	<tr>
+		<td>Filename to Save As:</td>
+		<td><input id="inputFileNameToSaveAs"></input></td>
+		<td><button onclick="saveTextAsFile()">Save Blockly Config to File</button></td>
+	</tr>
+	<tr>
+		<td>Select a File to Load:</td>
+		<td><input type="file" id="fileToLoad"></td>
+		<td><button onclick="loadFileAsText()">Load Selected Blockly Config</button><td>
+	</tr>
+	<tr>
+		<td>Filename to Save Logstash Config As:</td>
+		<td><input id="logstashConfigNameToSaveAs"></input></td>
+		<td><button onclick="saveLogstashConfigAsFile()">Save Logstash Config to File</button></td>
+	</tr>
+</table>
+
+
+<script type='text/javascript'>
+var workspace = Blockly.inject('blocklyDiv',
+        {
+         toolbox: document.getElementById('toolbox')});
+var xml = Blockly.Xml.textToDom(xmlText);
+Blockly.Xml.domToWorkspace(workspace, xml);
+  function showCode() {
+      // Generate JavaScript code and display it.
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      //var xml = Blockly.Xml.workspaceToDom(workspace);
+      alert(code);
+    }   
+    function saveConfig() {
+    	var xml = Blockly.Xml.workspaceToDom(workspace);
+    	var xml_text = Blockly.Xml.domToPrettyText(xml);
+    	saveTextAsFile();
+      //  var blob = new Blob([xml_text], {type: "text/plain;charset=utf-8"});
+        } 
+    function loadConfig() {
+    	
+        alert("Functionality not yet implimented");
+      }
+  function myUpdateFunction() {
+	  var code = Blockly.JavaScript.workspaceToCode(workspace);
+	  document.getElementById('textarea').value = code;
+	}
+	//workspace.addChangeListener(myUpdateFunction);
+  function runCode() {
+      // Generate JavaScript code and run it.
+     
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      try {
+        eval(code);
+      } catch (e) {
+        alert(e);
+      }
+    }
+  
+  
+  function saveLogstashConfigAsFile()
+  { 
+	  var code = Blockly.JavaScript.workspaceToCode(workspace);
+  	
+  	var textFileAsBlob = new Blob([code], {type:'text/plain'});
+  	//var fileNameToSaveAs = "sample.txt";
+  	var fileNameToSaveAs = document.getElementById("logstashConfigNameToSaveAs").value;
+  	var downloadLink = document.createElement("a");
+  	downloadLink.download = fileNameToSaveAs;
+  	downloadLink.innerHTML = "Download File";
+  	if (window.webkitURL != null)
+  	{
+  		// Chrome allows the link to be clicked
+  		// without actually adding it to the DOM.
+  		downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+  	}
+  	else
+  	{
+  		// Firefox requires the link to be added to the DOM
+  		// before it can be clicked.
+  		downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+  		downloadLink.onclick = destroyClickedElement;
+  		downloadLink.style.display = "none";
+  		document.body.appendChild(downloadLink);
+  	}
+
+  	downloadLink.click();
+  }
+  
+  function saveTextAsFile()
+  { 
+	var xml = Blockly.Xml.workspaceToDom(workspace);
+  	var textToWrite = Blockly.Xml.domToPrettyText(xml);
+  	var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+  	//var fileNameToSaveAs = "sample.txt";
+  	var fileNameToSaveAs = document.getElementById("inputFileNameToSaveAs").value;
+  	var downloadLink = document.createElement("a");
+  	downloadLink.download = fileNameToSaveAs;
+  	downloadLink.innerHTML = "Download File";
+  	if (window.webkitURL != null)
+  	{
+  		// Chrome allows the link to be clicked
+  		// without actually adding it to the DOM.
+  		downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+  	}
+  	else
+  	{
+  		// Firefox requires the link to be added to the DOM
+  		// before it can be clicked.
+  		downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+  		downloadLink.onclick = destroyClickedElement;
+  		downloadLink.style.display = "none";
+  		document.body.appendChild(downloadLink);
+  	}
+
+  	downloadLink.click();
+  }
+
+  function destroyClickedElement(event)
+  {
+  	document.body.removeChild(event.target);
+  }
+
+  function loadFileAsText()
+  { 
+  	var fileToLoad = document.getElementById("fileToLoad").files[0];
+  	var fileReader = new FileReader();
+  	fileReader.onload = function(fileLoadedEvent) 
+  	{
+  		var textFromFileLoaded = fileLoadedEvent.target.result;
+  		var xml = Blockly.Xml.textToDom(textFromFileLoaded);
+  		Blockly.mainWorkspace.clear();
+  		Blockly.Xml.domToWorkspace(workspace, xml);
+  	};
+  	fileReader.readAsText(fileToLoad, "UTF-8");
+  }
+
+  </script>
+  
+</body>
+</html>
